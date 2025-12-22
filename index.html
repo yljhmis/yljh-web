@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新北市育林國中</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* 1. 跳過主內容連結 (Skip Link) */
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            background: #000;
+            color: #fff;
+            padding: 10px 20px;
+            z-index: 3000;
+            text-decoration: none;
+            transition: top 0.3s;
+        }
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* 2. 視覺輔助標記 (:::) */
+        .accesskey-marker {
+            text-decoration: none;
+            color: inherit;
+            font-size: 0.875rem;
+            margin-right: 5px;
+        }
+        .accesskey-marker:focus {
+            outline: 2px solid #ffbf47;
+        }
+
+        body {
+            padding-top: 56px; /* 避開固定導覽列 */
+            line-height: 1.6;
+        }
+
+        /* 3. Banner 高對比度處理 (AA 級規範：4.5:1) */
+        .hero-banner {
+            /* 使用黑色半透明遮罩 (0.6) 確保白色文字在任何背景圖下都清晰可讀 */
+            /* background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/banner-bg.png'); */
+            background: url('images/banner-bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        /* 4. 強化焦點狀態 (Keyboard Focus) */
+        a:focus, button:focus, .btn:focus {
+            outline: 3px solid #ffbf47 !important;
+            outline-offset: 2px;
+            box-shadow: none !important;
+        }
+
+        .content-section {
+            padding: 60px 0;
+        }
+
+        /* 頁尾連結樣式 */
+        .footer-link {
+            color: #adb5bd;
+            text-decoration: none;
+        }
+        .footer-link:hover, .footer-link:focus {
+            color: #fff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="#main-content" class="skip-link">跳過主導覽直接進入主要內容</a>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow" aria-label="主選單">
+            <div class="container">
+                <a href="#accesskey-u" id="accesskey-u" class="accesskey-marker" title="上方導覽連結區" accesskey="U">:::</a>
+                
+                <a class="navbar-brand" href="/" title="回到新北市育林國中首頁">新北市育林國中</a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="切換導覽選單">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" aria-current="page">首頁</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">學校介紹</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">處室資訊</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">聯絡我們</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero-banner" role="region" aria-label="歡迎區塊">
+        <div class="container">
+            <h1 class="display-4 fw-bold">歡迎光臨新北市育林國中</h1>
+            <p class="lead mb-4">追求卓越、健康成長，建立友善溫馨的校園環境。</p>
+            <a href="#main-content" class="btn btn-primary btn-lg">探索更多</a>
+        </div>
+    </section>
+
+    <main id="main-content" class="container content-section" tabindex="-1">
+        <a href="#accesskey-c" id="accesskey-c" class="accesskey-marker" title="中央內容區" accesskey="C">:::</a>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <h2 class="border-bottom pb-2">最新消息</h2>
+                <p>這裡是網頁的主要內容區域。我們已經設定了 <code>tabindex="-1"</code>，確保「跳過主導覽」功能能精確定位至此。</p>
+                <div style="height: 300px; background-color: #f8f9fa; border: 1px dashed #dee2e6;" class="d-flex align-items-center justify-content-center">
+                    主要內容展示區
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h2 class="border-bottom pb-2">快速連結</h2>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">校園行事曆</a>
+                    <a href="#" class="list-group-item list-group-item-action">教育局通報</a>
+                    <a href="#" class="list-group-item list-group-item-action">午餐選單</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white pt-5 pb-3">
+        <div class="container">
+            <a href="#accesskey-z" id="accesskey-z" class="accesskey-marker text-secondary" title="下方頁尾資訊區" accesskey="Z">:::</a>
+            
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <h2 class="h5 mb-3 text-info">便捷鍵 (Accesskey) 設定說明：</h2>
+                    <ul class="list-unstyled small text-secondary">
+                        <li class="mb-1">本網站符合無障礙設計原則，設置便捷鍵 (Accesskey) 如下：</li>
+                        <li><span class="badge bg-outline-light border me-1">Alt+U</span>：上方導覽連結區，包括網站主要導覽。</li>
+                        <li><span class="badge bg-outline-light border me-1">Alt+C</span>：中央內容區，為本頁面的核心資訊。</li>
+                        <li><span class="badge bg-outline-light border me-1">Alt+Z</span>：下方頁尾資訊區，包含版權及聯絡資訊。</li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 text-lg-end mb-4">
+                    <div class="mb-3">
+                        <a href="https://accessibility.moda.gov.tw/" target="_blank" title="無障礙網頁標章 A-AA 級 (另開新視窗)">
+                            <img src="https://accessibility.moda.gov.tw/Images/ModelCheck/Badge_AA.png" alt="無障礙標章 AA 級圖示" style="width: 120px;">
+                        </a>
+                    </div>
+                    <div class="small">
+                        <p class="mb-1"><strong>新北市育林國中</strong></p>
+                        <p class="mb-1">地址：238新北市樹林區復興路395號</p>
+                        <p class="mb-1">電話：(02) 2684-1160</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary">
+
+            <div class="row py-2">
+                <div class="col-md-6 small">
+                    <p>&copy; 2025 新北市育林國中 版權所有</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <nav aria-label="頁尾輔助連結">
+                        <a href="#" class="footer-link me-3 small">網站地圖</a>
+                        <a href="#" class="footer-link me-3 small">隱私權政策</a>
+                        <a href="#" class="footer-link small">政府開放資料宣告</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
