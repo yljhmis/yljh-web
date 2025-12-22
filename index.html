@@ -10,100 +10,60 @@
     <style>
         /* 1. 跳過主內容連結 (Skip Link) */
         .skip-link {
-            position: absolute;
-            top: -100px;
-            left: 0;
-            background: #000;
-            color: #fff;
-            padding: 10px 20px;
-            z-index: 3000;
-            text-decoration: none;
-            transition: top 0.3s;
+            position: absolute; top: -100px; left: 0; background: #000; color: #fff;
+            padding: 10px 20px; z-index: 3000; text-decoration: none; transition: top 0.3s;
         }
-        .skip-link:focus {
-            top: 0;
-        }
+        .skip-link:focus { top: 0; }
 
-        /* 2. 視覺輔助標記 (:::) */
-        .accesskey-marker {
-            text-decoration: none;
-            color: inherit;
-            font-size: 0.875rem;
-            margin-right: 5px;
-        }
+        /* 2. 視覺輔助標記與隱藏文字 */
+        .accesskey-marker { text-decoration: none; color: inherit; font-size: 0.875rem; margin-right: 5px; }
         .visually-hidden-text {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
         }
 
-        body {
-            padding-top: 56px; 
-            line-height: 1.6;
-        }
+        body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 
-        /* 3. 多層 Banner 處理 */
+        /* 3. Banner 樣式 (維持 400px 高度) */
         .hero-banner {
             background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url('images/banner-bg.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            min-height: 400px;
-            display: flex;
-            align-items: flex-end;
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            min-height: 400px; display: flex; align-items: flex-end;
         }
-
         .hero-banner .container {
             background-image: url('images/school-title.png');
-            background-size: min(100%, 600px) auto;
-            background-position: left bottom 50px; 
-            background-repeat: no-repeat;
-            min-height: 250px; 
-            width: 100%;
+            background-size: min(100%, 600px) auto; background-position: left bottom 50px; 
+            background-repeat: no-repeat; min-height: 250px; width: 100%;
         }
 
-        /* 4. 強化焦點狀態 */
+        /* 4. 輪播區塊樣式 */
+        .carousel-container { margin-top: 10px; margin-bottom: 30px; }
+        .carousel-item img { width: 100%; height: auto; display: block; border-radius: 4px; }
+        
+        /* 暫停鈕樣式 */
+        .carousel-controls-extra { position: absolute; bottom: 20px; right: 20px; z-index: 15; }
+        .btn-pause {
+            background: rgba(0,0,0,0.7); color: white; border: 2px solid #fff;
+            padding: 8px 16px; border-radius: 4px; font-weight: bold;
+        }
+
+        /* 5. 內容區塊樣式 */
+        .content-section { 
+            padding: 50px 0; background-color: #ffffff; border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        /* 6. 焦點強化 */
         a:focus, button:focus, .btn:focus, [tabindex="0"]:focus {
-            outline: 3px solid #ffbf47 !important;
-            outline-offset: 2px;
-            box-shadow: none !important;
+            outline: 3px solid #ffbf47 !important; outline-offset: 2px; box-shadow: none !important;
         }
 
-        .content-section {
-            padding: 60px 0;
-        }
-
-        /* 頁尾樣式優化 */
-        footer {
-            background-color: #212529;
-            color: white;
-        }
-        .footer-link {
-            color: #adb5bd;
-            text-decoration: none;
-        }
-        .footer-link:hover, .footer-link:focus {
-            color: #fff;
-            text-decoration: underline;
-        }
-        .footer-policy-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .footer-policy-list li {
-            display: inline-block;
-        }
-        .footer-policy-list li:not(:last-child)::after {
-            content: "|";
-            color: #495057;
-            margin: 0 10px;
-        }
+        footer { background-color: #212529; color: white; }
+        .footer-link { color: #adb5bd; text-decoration: none; }
+        .footer-link:hover, .footer-link:focus { color: #fff; text-decoration: underline; }
+        .footer-policy-list { list-style: none; padding: 0; margin: 0; }
+        .footer-policy-list li { display: inline-block; }
+        .footer-policy-list li:not(:last-child)::after { content: "|"; color: #495057; margin: 0 10px; }
     </style>
 </head>
 <body>
@@ -116,16 +76,11 @@
                 <a href="#accesskey-u" id="accesskey-u" class="accesskey-marker" title="上方導覽連結區" accesskey="U">
                     :::<span class="visually-hidden-text">上方導覽連結區</span>
                 </a>
-                
-                <a class="navbar-brand" href="/" title="回到新北市立育林國中首頁">
-                    <strong>新北市育林國中</strong>
-                </a>
-                
+                <a class="navbar-brand" href="/" title="回到新北市立育林國中首頁"><strong>新北市育林國中</strong></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
                         aria-controls="navbarNav" aria-expanded="false" aria-label="切換導覽選單">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link active" href="#" aria-current="page">首頁</a></li>
@@ -138,11 +93,34 @@
         </nav>
     </header>
 
-    <section class="hero-banner" aria-label="校景背景圖">
+    <section class="hero-banner" aria-label="校景背景區">
         <div class="container">
             <h1 class="visually-hidden-text">新北市立育林國民中學 - 歡迎蒞臨本校網站</h1>
         </div>
     </section>
+
+    <div class="container carousel-container">
+        <section id="main-carousel" class="carousel slide shadow" data-bs-ride="carousel" aria-roledescription="carousel" aria-label="校園重點活動輪播">
+            <div class="carousel-indicators" id="carousel-indicators-container"></div>
+
+            <div class="carousel-inner" id="carousel-inner-container"></div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#main-carousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">上一張投影片</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#main-carousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">下一張投影片</span>
+            </button>
+
+            <div class="carousel-controls-extra">
+                <button type="button" class="btn-pause" id="carouselPauseBtn" aria-label="停止輪播動畫">
+                    暫停輪播
+                </button>
+            </div>
+        </section>
+    </div>
 
     <main id="main-content" class="container content-section" tabindex="-1">
         <a href="#accesskey-c" id="accesskey-c" class="accesskey-marker" title="中央內容區" accesskey="C">
@@ -152,10 +130,8 @@
         <div class="row">
             <section class="col-md-8" aria-labelledby="news-heading">
                 <h2 id="news-heading" class="border-bottom pb-2">最新消息</h2>
-                <p>本校網站已符合無障礙 AA 級標準。目前 <code>school-title.png</code> 位於 Banner 左下方 50px 處。</p>
-                <div style="height: 300px; background-color: #f8f9fa; border: 1px dashed #dee2e6;" class="d-flex align-items-center justify-content-center">
-                    <p>主要內容展示區</p>
-                </div>
+                <div id="dynamic-news-content" class="py-3">
+                    </div>
             </section>
             
             <aside class="col-md-4" aria-labelledby="quicklinks-heading">
@@ -163,7 +139,6 @@
                 <div class="list-group">
                     <a href="#" class="list-group-item list-group-item-action">校園行事曆</a>
                     <a href="#" class="list-group-item list-group-item-action">教育局通報</a>
-                    <a href="#" class="list-group-item list-group-item-action">教職員郵件系統</a>
                 </div>
             </aside>
         </div>
@@ -174,39 +149,109 @@
             <a href="#accesskey-z" id="accesskey-z" class="accesskey-marker" title="下方頁腳區" accesskey="Z">
                 :::<span class="visually-hidden-text">下方頁腳區</span>
             </a>
-            
             <div class="row">
                 <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
                     <p class="mb-1"><strong>新北市立育林國民中學</strong></p>
                     <p class="mb-1">地址：238新北市樹林區復興路395號</p>
                     <p class="mb-0">電話：(02) 2684-1160</p>
                 </div>
-                
                 <div class="col-md-6 text-center text-md-end">
-                    <p class="mb-2">&copy; 2025 新北市立育林國中 版權所有</p>
-                    
+                    <p class="mb-2">&copy; 2025 版權所有</p>
                     <nav aria-label="頁尾政策導覽">
                         <ul class="footer-policy-list">
-                            <li><a href="#" class="footer-link" title="前往網站地圖頁面">網站地圖</a></li>
-                            <li><a href="#" class="footer-link" title="前往隱私權保護政策頁面">隱私權保護政策</a></li>
-                            <li><a href="#" class="footer-link" title="前往資訊安全政策頁面">資訊安全政策</a></li>
-                            <li><a href="#" class="footer-link" title="前往政府網站資料開放宣告頁面">政府網站資料開放宣告</a></li>
+                            <li><a href="#" class="footer-link">網站地圖</a></li>
+                            <li><a href="#" class="footer-link">隱私權政策</a></li>
+                            <li><a href="#" class="footer-link">資安政策</a></li>
+                            <li><a href="#" class="footer-link">資料開放宣告</a></li>
                         </ul>
                     </nav>
                 </div>
-            </div>
-            
-            <hr class="my-4" style="border-color: #495057;">
-            
-            <div class="text-center">
-                <a href="https://accessibility.moda.gov.tw/Applications/Detail/..." title="前往無障礙網站檢測結果頁面(另開新視窗)" target="_blank" rel="noopener noreferrer">
-                    <img src="images/accessibility_badge.png" alt="通過AA優先等級無障礙網頁檢測" style="width: 88px; height: 31px; border: 0;">
-                </a>
-                <p class="small text-muted mt-2">建議使用 Edge, Chrome, Firefox 瀏覽器，解析度 1920x1080 以上以獲得最佳效果</p>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 1. 定義 JSON 格式的輪播資料
+        const carouselData = [
+            {
+                "src": "carousel/00_114會考.png",
+                "alt": "114年國中教育會考重要日程資訊"
+            },
+            {
+                "src": "carousel/01_30周年校慶專刊.png",
+                "alt": "育林國中30周年校慶紀念專刊"
+            },
+            {
+                "src": "carousel/02_113技藝競賽成績.png",
+                "alt": "113學年度技藝競賽優異成績榜單"
+            }
+        ];
+
+        // 2. 初始化輪播與內容
+        function initDynamicContent() {
+            const indicatorsContainer = document.getElementById('carousel-indicators-container');
+            const innerContainer = document.getElementById('carousel-inner-container');
+            //const newsContainer = document.getElementById('dynamic-news-content');
+
+            let indicatorsHtml = '';
+            let innerHtml = '';
+            //let newsHtml = '<ul class="list-unstyled">';
+
+            carouselData.forEach((item, index) => {
+                const activeClass = index === 0 ? 'active' : '';
+                const ariaCurrent = index === 0 ? 'aria-current="true"' : '';
+
+                // 生成 Indicators
+                indicatorsHtml += `
+                    <button type="button" data-bs-target="#main-carousel" 
+                        data-bs-slide-to="${index}" class="${activeClass}" 
+                        ${ariaCurrent} aria-label="第 ${index + 1} 張投影片"></button>`;
+
+                // 生成 Slides
+                innerHtml += `
+                    <div class="carousel-item ${activeClass}" aria-roledescription="slide" aria-label="${index + 1} 之 ${carouselData.length}">
+                        <img src="${item.src}" alt="${item.alt}">
+                    </div>`;
+
+                // 生成簡易新聞列表 (選用)
+                //newsHtml += `<li class="mb-2">● ${item.alt}</li>`;
+            });
+
+            indicatorsContainer.innerHTML = indicatorsHtml;
+            innerContainer.innerHTML = innerHtml;
+            //newsContainer.innerHTML = newsHtml + '</ul>';
+        }
+
+        // 3. 頁面載入後執行
+        document.addEventListener('DOMContentLoaded', () => {
+            initDynamicContent();
+
+            // 初始化 Bootstrap Carousel
+            const carouselElement = document.querySelector('#main-carousel');
+            const carousel = new bootstrap.Carousel(carouselElement, {
+                interval: 5000,
+                pause: 'hover'
+            });
+
+            // 暫停/播放按鈕邏輯
+            const pauseBtn = document.querySelector('#carouselPauseBtn');
+            let isPaused = false;
+
+            pauseBtn.addEventListener('click', function() {
+                if (!isPaused) {
+                    carousel.pause();
+                    pauseBtn.innerText = '開始輪播';
+                    pauseBtn.setAttribute('aria-label', '開始輪播動畫');
+                    isPaused = true;
+                } else {
+                    carousel.cycle();
+                    pauseBtn.innerText = '暫停輪播';
+                    pauseBtn.setAttribute('aria-label', '停止輪播動畫');
+                    isPaused = false;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
