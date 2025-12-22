@@ -8,7 +8,6 @@
 	<link rel="icon" href="images/logo.png" type="image/png">
 	
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -36,7 +35,7 @@
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="https://pts.ntpc.edu.tw" target="_blank" rel="noopener noreferrer" title="校務行政系統(另開新視窗)">
+							<a class="nav-link" href="https://pts.ntpc.edu.tw" target="_blank" rel="noopener noreferrer" title="親師生平台(另開新視窗)">
 								親師生平台
 								<span class="visually-hidden-text">(另開新視窗)</span>
 							</a>
@@ -78,19 +77,8 @@
 
     <main id="main-content" class="container-fluid content-section px-3" tabindex="-1">
 		<div class="row">
-			<nav class="col-md-3 mb-4" aria-labelledby="left-nav-heading">
-				<a href="#left-nav-heading" id="accesskey-l" class="accesskey-marker" title="左側導覽區" accesskey="L">
-					:::<span class="visually-hidden-text">左側導覽區</span>
-				</a>
-				<h2 id="left-nav-heading" class="h4 border-bottom pb-2 mb-3">快速連結</h2>
-				<div class="list-group">
-					<a href="#" class="list-group-item list-group-item-action">校園行事曆</a>
-					<a href="#" class="list-group-item list-group-item-action">教育局通報</a>
-					<a href="#" class="list-group-item list-group-item-action">校內常用表單</a>
-				</div>
-			</nav>
-
-			<section class="col-md-6 mb-4" aria-labelledby="news-heading">
+            
+            <section class="col-md-6 order-md-2 mb-4" aria-labelledby="news-heading">
 				<a href="#news-heading" id="accesskey-c" class="accesskey-marker" title="中央內容區" accesskey="C">
 					:::<span class="visually-hidden-text">中央內容區</span>
 				</a>
@@ -121,10 +109,22 @@
 					</iframe>
 				</div>
 			</section>
+
+            <nav class="col-md-3 order-md-1 mb-4" aria-labelledby="left-nav-heading">
+				<a href="#left-nav-heading" id="accesskey-l" class="accesskey-marker" title="左側欄" accesskey="L">
+					:::<span class="visually-hidden-text">左側欄</span>
+				</a>
+				<h2 id="left-nav-heading" class="h4 border-bottom pb-2 mb-3">快速連結</h2>
+				<div class="list-group">
+					<a href="#" class="list-group-item list-group-item-action">校園行事曆</a>
+					<a href="#" class="list-group-item list-group-item-action">教育局通報</a>
+					<a href="#" class="list-group-item list-group-item-action">校內常用表單</a>
+				</div>
+			</nav>
 	
-			<aside class="col-md-3" aria-labelledby="right-info-heading">
-				<a href="#right-info-heading" id="accesskey-r" class="accesskey-marker" title="右側相關資訊區" accesskey="R">
-					:::<span class="visually-hidden-text">右側相關資訊區</span>
+            <aside class="col-md-3 order-md-3" aria-labelledby="right-info-heading">
+				<a href="#right-info-heading" id="accesskey-r" class="accesskey-marker" title="右側欄" accesskey="R">
+					:::<span class="visually-hidden-text">右側欄</span>
 				</a>
 				<h2 id="right-info-heading" class="h4 border-bottom pb-2 mb-3">環境監測</h2>
 				
@@ -142,6 +142,7 @@
 					</div>
 				</section>
 			</aside>
+
 		</div>
 	</main>
 
