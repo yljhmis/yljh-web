@@ -22,6 +22,8 @@
             position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
             overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
         }
+		
+		.navbar .accesskey-marker { color: #ffffff !important; }
 
         body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 
@@ -149,6 +151,18 @@
                     <a href="#" class="list-group-item list-group-item-action">校園行事曆</a>
                     <a href="#" class="list-group-item list-group-item-action">教育局通報</a>
                 </div>
+				
+				<section class="mt-4" aria-labelledby="air-quality-heading">
+					<h2 id="air-quality-heading" class="border-bottom pb-2">空氣品質監測</h2>
+					<div class="ratio ratio-4x3" style="min-height: 450px;">
+						<iframe 
+							src="https://airtw.moenv.gov.tw/AirQuality_APIs/WebWidget.aspx?site=91" 
+							title="新北市樹林監測站-空氣品質即時監測資訊"
+							style="border:0; width:100%; height:100%;" 
+							loading="lazy">
+						</iframe>
+					</div>
+				</section>
             </aside>
         </div>
     </main>
