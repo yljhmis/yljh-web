@@ -24,7 +24,35 @@
         }
 		
 		.navbar .accesskey-marker { color: #ffffff !important; }
+		
+		/* 統一所有定位點樣式：深色標籤 + 白色文字，確保 AA 級對比度 */
+		/*
+		.accesskey-marker {
+			display: inline-block;
+			background-color: #212529; /* 深色背景 */
+			color: #ffffff !important;   /* 白色文字 */
+			padding: 2px 6px;
+			border-radius: 4px;
+			font-size: 0.8rem;
+			text-decoration: none !important;
+			margin-right: 8px;
+			vertical-align: middle;
+			font-weight: bold;
+			line-height: 1.2;
+		}
+		.visually-hidden-text {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+        }
+		*/
 
+		/* 確保導覽列內的定位點維持白色外觀 */
+		/*
+		.navbar .accesskey-marker {
+			background-color: #495057; /* 稍微淡一點的深色，與黑色導覽列區隔 */
+		}
+		*/
+		
         body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 
         /* Banner 樣式 */
@@ -134,38 +162,50 @@
     </div>
 
     <main id="main-content" class="container-fluid content-section px-3" tabindex="-1">
-        <a href="#news-heading" id="accesskey-c" class="accesskey-marker" title="中央內容區" accesskey="C">
-            :::<span class="visually-hidden-text">中央內容區</span>
-        </a>
-        
-        <div class="row">
-            <section class="col-md-8" aria-labelledby="news-heading">
-                <h2 id="news-heading" class="border-bottom pb-2">最新消息</h2>
-                <div id="dynamic-news-content" class="py-3" aria-live="polite">
-                    </div>
-            </section>
-            
-            <aside class="col-md-4" aria-labelledby="quicklinks-heading">
-                <h2 id="quicklinks-heading" class="border-bottom pb-2">快速連結</h2>
-                <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action">校園行事曆</a>
-                    <a href="#" class="list-group-item list-group-item-action">教育局通報</a>
-                </div>
+		<div class="row">
+			<nav class="col-md-3 mb-4" aria-labelledby="left-nav-heading">
+				<a href="#left-nav-heading" id="accesskey-l" class="accesskey-marker" title="左側導覽區" accesskey="L">
+					:::<span class="visually-hidden-text">左側導覽區</span>
+				</a>
+				<h2 id="left-nav-heading" class="h4 border-bottom pb-2 mb-3">快速連結</h2>
+				<div class="list-group">
+					<a href="#" class="list-group-item list-group-item-action">校園行事曆</a>
+					<a href="#" class="list-group-item list-group-item-action">教育局通報</a>
+					<a href="#" class="list-group-item list-group-item-action">校內常用表單</a>
+				</div>
+			</nav>
+
+			<section class="col-md-6 mb-4" aria-labelledby="news-heading">
+				<a href="#news-heading" id="accesskey-c" class="accesskey-marker" title="中央內容區" accesskey="C">
+					:::<span class="visually-hidden-text">中央內容區</span>
+				</a>
+				<h2 id="news-heading" class="h4 border-bottom pb-2 mb-3">最新消息</h2>
+				<div id="dynamic-news-content" class="py-2" aria-live="polite">
+					</div>
+			</section>
+
+			<aside class="col-md-3" aria-labelledby="right-info-heading">
+				<a href="#right-info-heading" id="accesskey-r" class="accesskey-marker" title="右側相關資訊區" accesskey="R">
+					:::<span class="visually-hidden-text">右側相關資訊區</span>
+				</a>
+				<h2 id="right-info-heading" class="h4 border-bottom pb-2 mb-3">環境監測</h2>
 				
-				<section class="mt-4" aria-labelledby="air-quality-heading">
-					<h2 id="air-quality-heading" class="border-bottom pb-2">空氣品質監測</h2>
-					<div class="ratio ratio-4x3" style="min-height: 450px;">
-						<iframe 
-							src="https://airtw.moenv.gov.tw/AirQuality_APIs/WebWidget.aspx?site=91" 
-							title="新北市樹林監測站-空氣品質即時監測資訊"
-							style="border:0; width:100%; height:100%;" 
-							loading="lazy">
-						</iframe>
+				<section aria-labelledby="air-quality-heading">
+					<h3 id="air-quality-heading" class="visually-hidden">空氣品質監測</h3>
+					<div class="card border-0 shadow-sm">
+						<div class="card-body p-0">
+							<iframe 
+								src="https://airtw.moenv.gov.tw/AirQuality_APIs/WebWidget.aspx?site=91" 
+								title="新北市樹林監測站-空氣品質即時監測資訊"
+								style="border:0; width:100%; height:450px; border-radius: 8px;" 
+								loading="lazy">
+							</iframe>
+						</div>
 					</div>
 				</section>
-            </aside>
-        </div>
-    </main>
+			</aside>
+		</div>
+	</main>
 
     <footer class="pt-5 pb-3 px-3">
         <div class="container-fluid text-center">
