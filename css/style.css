@@ -1,0 +1,84 @@
+/* 1. 跳過主內容連結 */
+.skip-link {
+	position: absolute; top: -100px; left: 0; background: #000; color: #fff;
+	padding: 10px 20px; z-index: 3000; text-decoration: none; transition: top 0.3s;
+}
+.skip-link:focus { top: 0; }
+
+.accesskey-marker { text-decoration: none; color: inherit; font-size: 0.875rem; margin-right: 5px; }
+.visually-hidden-text {
+	position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+	overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+}
+
+.navbar .accesskey-marker { color: #ffffff !important; }
+
+/* 統一所有定位點樣式：深色標籤 + 白色文字，確保 AA 級對比度 */
+/*
+.accesskey-marker {
+	display: inline-block;
+	background-color: #212529; /* 深色背景 */
+	color: #ffffff !important;   /* 白色文字 */
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-size: 0.8rem;
+	text-decoration: none !important;
+	margin-right: 8px;
+	vertical-align: middle;
+	font-weight: bold;
+	line-height: 1.2;
+}
+.visually-hidden-text {
+	position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+	overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+}
+*/
+
+/* 確保導覽列內的定位點維持白色外觀 */
+/*
+.navbar .accesskey-marker {
+	background-color: #495057; /* 稍微淡一點的深色，與黑色導覽列區隔 */
+}
+*/
+
+body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
+
+/* Banner 樣式 */
+.hero-banner {
+	background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url('../images/banner-bg.png');
+	background-size: cover; background-position: center; background-repeat: no-repeat;
+	min-height: 400px; display: flex; align-items: flex-end;
+}
+.hero-banner .container {
+	background-image: url('../images/school-title.png');
+	background-size: min(100%, 600px) auto; background-position: left bottom 50px; 
+	background-repeat: no-repeat; min-height: 250px; width: 100%;
+}
+
+/* 輪播區塊樣式 */
+.carousel-container { margin-top: 10px; margin-bottom: 30px;}
+.carousel-item img { width: 100%; height: auto; display: block; border-radius: 4px; }
+
+.carousel-controls-extra { position: absolute; bottom: 20px; right: 20px; z-index: 15; }
+.btn-pause {
+	background: rgba(0,0,0,0.7); color: white; border: 2px solid #fff;
+	padding: 8px 16px; border-radius: 4px; font-weight: bold;
+}
+
+/* 內容區塊樣式 */
+.content-section { 
+	padding: 50px 0; background-color: #ffffff; border-radius: 8px;
+	box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+}
+
+/* 焦點強化：符合 AA 級可視化焦點要求 */
+a:focus, button:focus, .btn:focus, [tabindex="0"]:focus {
+	outline: 3px solid #ffbf47 !important; outline-offset: 2px; box-shadow: none !important;
+}
+
+footer { background-color: #212529; color: white; }
+.footer-link { color: #adb5bd; text-decoration: none; }
+.footer-link:hover, .footer-link:focus { color: #fff; text-decoration: underline; }
+.footer-policy-list { list-style: none; padding: 0; margin: 0; }
+.footer-policy-list li { display: inline-block; }
+.footer-policy-list li:not(:last-child)::after { content: "|"; color: #495057; margin: 0 10px; }
