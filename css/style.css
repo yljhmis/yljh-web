@@ -5,7 +5,7 @@
 }
 .skip-link:focus { top: 0; }
 
-.accesskey-marker { text-decoration: none; color: inherit; font-size: 0.875rem; margin-right: 5px; }
+.accesskey-marker { text-decoration: none; color: inherit; font-size: 0.875rem; margin-right: 5px; display: inline-block; min-width: 24px; min-height: 24px; }
 .visually-hidden-text {
 	position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
 	overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
@@ -16,6 +16,7 @@
 body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 
 /* Banner 樣式 */
+/*
 .hero-banner {
 	background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url('../images/banner-bg.png');
 	background-size: cover; background-position: center; background-repeat: no-repeat;
@@ -25,6 +26,35 @@ body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 	background-image: url('../images/school-title.png');
 	background-size: min(100%, 600px) auto; background-position: left bottom 50px; 
 	background-repeat: no-repeat; min-height: 250px; width: 100%;
+}*/
+
+/* 修改後的 Banner 樣式 */
+.hero-banner {
+    /* 這裡保留純裝飾性的背景底圖 (校景) */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url('../images/banner-bg.png');
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+    min-height: 400px; 
+    display: flex; 
+    align-items: flex-end;
+    padding-bottom: 50px; /* 增加底部間距，維持原有的視覺位置 */
+}
+
+.hero-banner .container {
+    /* 移除原本的背景圖相關屬性，因為已改用 HTML 標籤 */
+    background-image: none; 
+    min-height: auto; /* 不再需要固定高度撐開背景 */
+    width: 100%;
+}
+
+/* 新增圖片樣式控制 */
+.banner-title-img {
+    /* 參考原 CSS 中的 min(100%, 600px) 設定 */
+    max-width: 600px;
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 /* 輪播區塊樣式 */

@@ -35,8 +35,8 @@ async function fetchAndInitCarousel() {
 
 	} catch (error) {
 		console.error('載入失敗:', error);
-		document.getElementById('carousel-inner-container').innerHTML = 
-			'<p class="p-4 text-danger">無法載入輪播內容，請檢查資料來源。</p>';
+		const container = document.getElementById('carousel-inner-container');
+		container.innerHTML = '<p class="p-4 text-danger" role="alert">無法載入輪播內容，請檢查網路連線。</p>';
 	}
 }
 
