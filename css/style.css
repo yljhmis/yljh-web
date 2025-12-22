@@ -13,34 +13,6 @@
 
 .navbar .accesskey-marker { color: #ffffff !important; }
 
-/* 統一所有定位點樣式：深色標籤 + 白色文字，確保 AA 級對比度 */
-/*
-.accesskey-marker {
-	display: inline-block;
-	background-color: #212529; /* 深色背景 */
-	color: #ffffff !important;   /* 白色文字 */
-	padding: 2px 6px;
-	border-radius: 4px;
-	font-size: 0.8rem;
-	text-decoration: none !important;
-	margin-right: 8px;
-	vertical-align: middle;
-	font-weight: bold;
-	line-height: 1.2;
-}
-.visually-hidden-text {
-	position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-	overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
-}
-*/
-
-/* 確保導覽列內的定位點維持白色外觀 */
-/*
-.navbar .accesskey-marker {
-	background-color: #495057; /* 稍微淡一點的深色，與黑色導覽列區隔 */
-}
-*/
-
 body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 
 /* Banner 樣式 */
@@ -72,8 +44,13 @@ body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 }
 
 /* 焦點強化：符合 AA 級可視化焦點要求 */
-a:focus, button:focus, .btn:focus, [tabindex="0"]:focus {
+/*a:focus, button:focus, .btn:focus, [tabindex="0"]:focus {
 	outline: 3px solid #ffbf47 !important; outline-offset: 2px; box-shadow: none !important;
+}*/
+/* 建議改用對比更鮮明的顏色，或使用黑白雙色輪廓線 */
+a:focus, button:focus, .btn:focus, [tabindex="0"]:focus {
+    outline: 3px solid #0056b3 !important; /* 深藍色對比度較佳 */
+    outline-offset: 2px;
 }
 
 footer { background-color: #212529; color: white; }
