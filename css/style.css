@@ -66,7 +66,8 @@ body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 /* 新增圖片樣式控制 */
 .banner-title-img {
     /* 參考原 CSS 中的 min(100%, 600px) 設定 */
-    max-width: 600px;
+    /*max-width: 600px;*/
+    max-width: min(100%, 600px);
     width: 100%;
     height: auto;
     display: block;
@@ -92,10 +93,16 @@ body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 /*a:focus, button:focus, .btn:focus, [tabindex="0"]:focus {
 	outline: 3px solid #ffbf47 !important; outline-offset: 2px; box-shadow: none !important;
 }*/
+/* 深藍色對比度較佳 */
+/*a:focus, button:focus, .btn:focus, [tabindex="0"]:focus {
+	outline: 3px solid #0056b3 !important;
+    outline-offset: 2px;
+}*/
 /* 建議改用對比更鮮明的顏色，或使用黑白雙色輪廓線 */
 a:focus, button:focus, .btn:focus, [tabindex="0"]:focus {
-    outline: 3px solid #0056b3 !important; /* 深藍色對比度較佳 */
-    outline-offset: 2px;
+    outline: 2px solid #ffffff !important;
+    box-shadow: 0 0 0 4px #000000 !important;
+    outline-offset: 0;
 }
 
 footer { background-color: #212529; color: white; }
