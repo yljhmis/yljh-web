@@ -1,11 +1,26 @@
 /* 1. 跳過主內容連結 */
 .skip-link {
 	position: absolute; top: -100px; left: 0; background: #000; color: #fff;
-	padding: 10px 20px; z-index: 3000; text-decoration: none; transition: top 0.3s;
+	padding: 10px 20px; z-index: 5000; text-decoration: none; transition: top 0.3s;
 }
 .skip-link:focus { top: 0; }
 
-.accesskey-marker { text-decoration: none; color: inherit; font-size: 0.875rem; margin-right: 5px; display: inline-block; min-width: 24px; min-height: 24px; }
+.accesskey-marker {
+    text-decoration: none;
+    color: inherit;
+    font-size: 0.875rem;
+    margin-right: 8px; /* 稍微增加右邊距 */
+    display: inline-block;
+    min-width: 35px;    /* 增加最小寬度以容納字母 */
+    min-height: 24px;
+    text-align: center; /* 讓文字置中 */
+}
+/* 確保 Accesskey 在獲得焦點時也清晰可見 */
+.accesskey-marker:focus {
+    outline: 3px solid #ffbf47;
+    background-color: #000;
+    color: #fff !important;
+}
 .visually-hidden-text {
 	position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
 	overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
@@ -58,7 +73,7 @@ body { padding-top: 56px; line-height: 1.6; background-color: #f8f9fa; }
 }
 
 /* 輪播區塊樣式 */
-.carousel-container { margin-top: 10px; margin-bottom: 30px;}
+.carousel-container { margin-top: 10px; margin-bottom: 10px;}
 .carousel-item img { width: 100%; height: auto; display: block; border-radius: 4px; }
 
 .carousel-controls-extra { position: absolute; bottom: 20px; right: 20px; z-index: 15; }
@@ -89,3 +104,6 @@ footer { background-color: #212529; color: white; }
 .footer-policy-list { list-style: none; padding: 0; margin: 0; }
 .footer-policy-list li { display: inline-block; }
 .footer-policy-list li:not(:last-child)::after { content: "|"; color: #495057; margin: 0 10px; }
+
+
+.card-header.bg-primary { background-color: #546680 !important; }
