@@ -77,3 +77,35 @@ function startCarouselLogic() {
 }
 
 document.addEventListener('DOMContentLoaded', fetchAndInitCarousel);
+
+document.addEventListener('DOMContentLoaded', function () {
+    const navbarCollapse = document.getElementById('navbarNav');
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    
+    // 初始化 Bootstrap Collapse 實例
+    const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+        toggle: false
+    });
+
+    // A. 監聽 Esc 鍵：當選單開啟時，按下 Esc 應關閉選單並將焦點還給漢堡鈕
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && navbarCollapse.classList.contains('show')) {
+            bsCollapse.hide();
+            navbarToggler.focus(); // 重要：將焦點移回觸發按鈕，方便後續操作
+        }
+    });
+
+    // B. 監聽焦點移出：當使用者使用 Tab 鍵遊走，焦點離開選單範圍時，自動收合選單
+    navbarCollapse.addEventListener('focusout', function (e) {
+        // 使用 setTimeout 確保能獲取到下一個獲得焦點的元素 (e.relatedTarget)
+        setTimeout(() => {
+            const activeElement = document.activeElement;
+            // 如果新焦點不在選單內，且新焦點也不是選單切換鈕，則收合選單
+            if (!navbarCollapse.contains(activeElement) && activeElement !== navbarToggler) {
+                if (navbarCollapse.classList.contains('show')) {
+                    bsCollapse.hide();
+                }
+            }
+        }, 10);
+    });
+});
