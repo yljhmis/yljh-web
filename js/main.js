@@ -76,9 +76,12 @@ function startCarouselLogic() {
 	});
 }
 
-document.addEventListener('DOMContentLoaded', fetchAndInitCarousel);
+// document.addEventListener('DOMContentLoaded', fetchAndInitCarousel);
 
 document.addEventListener('DOMContentLoaded', function () {
+
+	fetchAndInitCarousel();
+
     const navbarCollapse = document.getElementById('navbarNav');
     const navbarToggler = document.querySelector('.navbar-toggler');
     
