@@ -111,4 +111,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }, 10);
     });
+
+	// C. 監聽全域點擊：解決您提到的問題
+	// 當選單開啟時，若點擊目標不在選單內且不是漢堡按鈕，則自動收合
+	document.addEventListener('click', function (e) {
+		// 檢查選單是否處於展開狀態
+		const isOpen = navbarCollapse.classList.contains('show');
+		// 檢查點擊位置是否在選單外部
+		const isClickOutside = !navbarCollapse.contains(e.target);
+		// 檢查點擊位置是否不是漢堡按鈕本身（避免與按鈕原有的切換功能衝突）
+		const isNotToggler = !navbarToggler.contains(e.target);
+
+		if (isOpen && isClickOutside && isNotToggler) {
+			bsCollapse.hide();
+		}
+	});
 });
