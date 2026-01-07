@@ -142,14 +142,30 @@ function initAccessibleTabs() {
 			nextIndex = (index + 1) % tabs.length;
 		} else if (e.key === 'ArrowLeft') {
 			nextIndex = (index - 1 + tabs.length) % tabs.length;
+		} else if (e.key === 'Home') {
+			nextIndex = 0;
+		} else if (e.key === 'End') {
+			nextIndex = tabs.length - 1;
 		} else {
 			return;
 		}
 
-		const bootstrapTab = bootstrap.Tab.getOrCreateInstance(tabs[nextIndex]);
-		bootstrapTab.show();
-		tabs[nextIndex].focus();
 		e.preventDefault();
+		const targetTab = tabs[nextIndex];
+
+		// 1. 更新所有頁籤狀態 (Roving Tabindex)
+		tabs.forEach(t => {
+			t.setAttribute('aria-selected', 'false');
+			t.setAttribute('tabindex', '-1');
+		});
+
+		// 2. 啟動目標頁籤
+		targetTab.setAttribute('aria-selected', 'true');
+		targetTab.setAttribute('tabindex', '0');
+
+		const bootstrapTab = bootstrap.Tab.getOrCreateInstance(targetTab);
+		bootstrapTab.show();
+		targetTab.focus();
 	});
 }
 
