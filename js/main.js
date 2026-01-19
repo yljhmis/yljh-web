@@ -1,6 +1,8 @@
 /**
  * 育林國中官方網站核心腳本
- * 修正：徹底解決輪播暫停後因滑鼠移開而自動重啟的問題，符合 WCAG 2.1 AA 規範
+ * 修正：
+ * 1. 解決輪播暫停後因滑鼠移開而自動重啟的問題。
+ * 2. 新增鍵盤焦點停駐暫停功能，符合 WCAG 2.1 AA 規範（2.2.2 暫停、停止、隱藏）。
  */
 
 async function fetchAndInitCarousel() {
@@ -54,15 +56,14 @@ function startCarouselLogic() {
 
 	/**
 	 * 初始化 Bootstrap Carousel
-	 * 為了完全控制暫停行為，我們手動處理 interval
 	 */
 	let carousel = new bootstrap.Carousel(carouselElement, {
 		interval: 5000,
-		pause: 'hover', // 保留滑鼠懸停暫停的功能
+		pause: 'hover', // 滑鼠懸停時暫停
 		keyboard: true
 	});
 
-	let isPaused = false;
+	let isPaused = false; // 紀錄使用者是否「手動」按下暫停按鈕
 
 	// 建立一個隱藏的 live region 用於狀態回饋
 	let statusFeedback = document.getElementById('carousel-status-feedback');
@@ -80,7 +81,6 @@ function startCarouselLogic() {
 			pauseBtn.setAttribute('aria-label', '開始輪播動畫');
 			statusFeedback.innerText = '輪播已暫停';
 			carouselElement.setAttribute('aria-live', 'polite');
-			// 強制移除 HTML 中的自動播放屬性，防止 Bootstrap 內部邏輯重啟
 			carouselElement.setAttribute('data-bs-ride', 'false');
 			carouselElement.setAttribute('data-bs-interval', 'false');
 		} else {
@@ -88,40 +88,55 @@ function startCarouselLogic() {
 			pauseBtn.setAttribute('aria-label', '暫停輪播動畫');
 			statusFeedback.innerText = '輪播已開始播放';
 			carouselElement.setAttribute('aria-live', 'off');
-			// 恢復自動播放屬性
 			carouselElement.setAttribute('data-bs-ride', 'carousel');
 			carouselElement.setAttribute('data-bs-interval', '5000');
 		}
 	};
 
+	/**
+	 * 1. 處理手動按鈕點擊
+	 */
 	pauseBtn.addEventListener('click', function() {
 		if (!isPaused) {
-			// 1. 執行暫停
 			carousel.pause();
 			isPaused = true;
-
-			// 2. 核心修正：監聽滑鼠移開事件，若處於「手動暫停」狀態，強迫停止
-			// 這是為了解決 Bootstrap 5 預設 mouseleave 會自動呼叫 cycle() 的問題
 			carouselElement.addEventListener('mouseleave', forcePauseOnLeave);
 		} else {
-			// 1. 恢復輪播
 			carousel.cycle();
 			isPaused = false;
-
-			// 2. 移除強制暫停的監聽
 			carouselElement.removeEventListener('mouseleave', forcePauseOnLeave);
 		}
 		updateUI(isPaused);
 	});
 
-	// 強制暫停函式
+	/**
+	 * 2. 核心修正：鍵盤焦點停駐暫停
+	 * 當 Tab 鍵焦點進入輪播區域（按鈕、指示器、連結等）時暫停輪播
+	 */
+	carouselElement.addEventListener('focusin', function() {
+		carousel.pause();
+		// 為了確保螢幕閱讀器使用者知道內容不會再跳動
+		carouselElement.setAttribute('aria-live', 'polite');
+	});
+
+	/**
+	 * 當焦點離開輪播區域時
+	 */
+	carouselElement.addEventListener('focusout', function() {
+		// 只有在「沒有手動暫停」的情況下，才恢復自動輪播
+		if (!isPaused) {
+			carousel.cycle();
+			carouselElement.setAttribute('aria-live', 'off');
+		}
+	});
+
 	function forcePauseOnLeave() {
 		if (isPaused) {
 			carousel.pause();
 		}
 	}
 
-	// 鍵盤導覽優化
+	// 方向鍵操作優化
 	carouselElement.addEventListener('keydown', function(e) {
 		if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
 			carouselElement.setAttribute('aria-live', 'polite');
