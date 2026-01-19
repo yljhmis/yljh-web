@@ -2,7 +2,8 @@
  * 育林國中官方網站核心腳本
  * 修正：
  * 1. 解決輪播暫停後因滑鼠移開而自動重啟的問題。
- * 2. 新增鍵盤焦點停駐暫停功能，符合 WCAG 2.1 AA 規範（2.2.2 暫停、停止、隱藏）。
+ * 2. 符合 WCAG 2.1 AA 規範（2.2.2 暫停、停止、隱藏）：新增鍵盤焦點停駐暫停。
+ * 3. 符合規範 2.4.3 焦點順序：優化頁籤導覽順序為「標題1->內容1->標題2->內容2...」。
  */
 
 async function fetchAndInitCarousel() {
@@ -54,18 +55,14 @@ function startCarouselLogic() {
 	const pauseBtn = document.querySelector('#carouselPauseBtn');
 	if (!carouselElement || !pauseBtn) return;
 
-	/**
-	 * 初始化 Bootstrap Carousel
-	 */
 	let carousel = new bootstrap.Carousel(carouselElement, {
 		interval: 5000,
-		pause: 'hover', // 滑鼠懸停時暫停
+		pause: 'hover',
 		keyboard: true
 	});
 
-	let isPaused = false; // 紀錄使用者是否「手動」按下暫停按鈕
+	let isPaused = false;
 
-	// 建立一個隱藏的 live region 用於狀態回饋
 	let statusFeedback = document.getElementById('carousel-status-feedback');
 	if (!statusFeedback) {
 		statusFeedback = document.createElement('div');
@@ -93,9 +90,6 @@ function startCarouselLogic() {
 		}
 	};
 
-	/**
-	 * 1. 處理手動按鈕點擊
-	 */
 	pauseBtn.addEventListener('click', function() {
 		if (!isPaused) {
 			carousel.pause();
@@ -109,21 +103,12 @@ function startCarouselLogic() {
 		updateUI(isPaused);
 	});
 
-	/**
-	 * 2. 核心修正：鍵盤焦點停駐暫停
-	 * 當 Tab 鍵焦點進入輪播區域（按鈕、指示器、連結等）時暫停輪播
-	 */
 	carouselElement.addEventListener('focusin', function() {
 		carousel.pause();
-		// 為了確保螢幕閱讀器使用者知道內容不會再跳動
 		carouselElement.setAttribute('aria-live', 'polite');
 	});
 
-	/**
-	 * 當焦點離開輪播區域時
-	 */
 	carouselElement.addEventListener('focusout', function() {
-		// 只有在「沒有手動暫停」的情況下，才恢復自動輪播
 		if (!isPaused) {
 			carousel.cycle();
 			carouselElement.setAttribute('aria-live', 'off');
@@ -136,7 +121,6 @@ function startCarouselLogic() {
 		}
 	}
 
-	// 方向鍵操作優化
 	carouselElement.addEventListener('keydown', function(e) {
 		if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
 			carouselElement.setAttribute('aria-live', 'polite');
@@ -145,80 +129,87 @@ function startCarouselLogic() {
 }
 
 /**
- * 初始化宣導頁籤組件 (WAI-ARIA 符合規範)
+ * 初始化宣導頁籤組件
+ * 修正焦點順序：由「方向鍵切換」改為符合檢測要求的「線性 Tab 鍵導覽」
  */
 function initAccessibleTabs() {
 	const tabList = document.querySelector('#promoTab');
 	if (!tabList) return;
 
-	const tabs = tabList.querySelectorAll('[role="tab"]');
+	const tabs = Array.from(tabList.querySelectorAll('[role="tab"]'));
 
-	const handleHash = () => {
-		const hash = window.location.hash;
-		if (!hash) return;
+	// 1. 確保所有頁籤標題皆可被 Tab 鍵遊走 (tabindex="0")
+	tabs.forEach((tab, index) => {
+		tab.setAttribute('tabindex', '0');
 
-		let targetTab = document.querySelector(`button${hash}[role="tab"]`);
-		if (targetTab) {
-			const bsTab = bootstrap.Tab.getOrCreateInstance(targetTab);
+		// 當標題獲得焦點時，自動顯示對應內容 (Follow Focus)
+		// 這能確保使用者 Tab 到標題時，下方的面板內容已更新為正確資訊
+		tab.addEventListener('focus', () => {
+			const bsTab = bootstrap.Tab.getOrCreateInstance(tab);
 			bsTab.show();
-			setTimeout(() => {
-				targetTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
-			}, 150);
+		});
+
+		// 2. 管理 Tab 鍵流向：當在面板最後一個元素按下 Tab，導向「下一個頁籤標題」
+		const panelId = tab.getAttribute('aria-controls');
+		const panel = document.getElementById(panelId);
+		if (panel) {
+			// 設定面板為可接受焦點，方便螢幕閱讀器讀取
+			panel.setAttribute('tabindex', '0');
+
+			// 監聽面板內的最後一個焦點元素
+			panel.addEventListener('keydown', (e) => {
+				if (e.key === 'Tab' && !e.shiftKey) {
+					const focusableElements = panel.querySelectorAll('a, button, input, textarea, [tabindex="0"]');
+					const lastElement = focusableElements[focusableElements.length - 1] || panel;
+
+					// 如果當前焦點在最後一個元素（或面板本身），則強制導向下一頁籤標題
+					if (document.activeElement === lastElement) {
+						const nextTab = tabs[index + 1];
+						if (nextTab) {
+							e.preventDefault();
+							nextTab.focus();
+						}
+					}
+				}
+			});
 		}
-	};
 
-	handleHash();
+		// 3. 處理 Shift + Tab：從標題往回走應回到前一個面板的末尾
+		tab.addEventListener('keydown', (e) => {
+			if (e.key === 'Tab' && e.shiftKey) {
+				const prevTab = tabs[index - 1];
+				if (prevTab) {
+					const prevPanelId = prevTab.getAttribute('aria-controls');
+					const prevPanel = document.getElementById(prevPanelId);
+					const prevFocusable = prevPanel.querySelectorAll('a, button, input, [tabindex="0"]');
+					const lastElOfPrev = prevFocusable[prevFocusable.length - 1] || prevPanel;
 
-	tabs.forEach(tab => {
-		tab.addEventListener('shown.bs.tab', event => {
-			const id = event.target.getAttribute('id');
-			if (id) {
-				history.replaceState(null, null, '#' + id);
+					e.preventDefault();
+					lastElOfPrev.focus();
+				}
 			}
 		});
 	});
 
-	tabList.addEventListener('keydown', e => {
-		let index = Array.from(tabs).indexOf(e.target);
-		if (index === -1) return;
-
-		let nextIndex;
-		if (e.key === 'ArrowRight') {
-			nextIndex = (index + 1) % tabs.length;
-		} else if (e.key === 'ArrowLeft') {
-			nextIndex = (index - 1 + tabs.length) % tabs.length;
-		} else if (e.key === 'Home') {
-			nextIndex = 0;
-		} else if (e.key === 'End') {
-			nextIndex = tabs.length - 1;
-		} else {
-			return;
+	// Hash 偵測維持
+	const handleHash = () => {
+		const hash = window.location.hash;
+		if (!hash) return;
+		let targetTab = document.querySelector(`button${hash}[role="tab"]`);
+		if (targetTab) {
+			const bsTab = bootstrap.Tab.getOrCreateInstance(targetTab);
+			bsTab.show();
+			setTimeout(() => targetTab.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
 		}
-
-		e.preventDefault();
-		const targetTab = tabs[nextIndex];
-
-		tabs.forEach(t => {
-			t.setAttribute('aria-selected', 'false');
-			t.setAttribute('tabindex', '-1');
-		});
-
-		targetTab.setAttribute('aria-selected', 'true');
-		targetTab.setAttribute('tabindex', '0');
-
-		const bootstrapTab = bootstrap.Tab.getOrCreateInstance(targetTab);
-		bootstrapTab.show();
-		targetTab.focus();
-	});
+	};
+	handleHash();
 }
 
 function optimizeNavBar() {
 	const navbarCollapse = document.getElementById('navbarNav');
 	const navbarToggler = document.querySelector('.navbar-toggler');
-
 	if (navbarCollapse && navbarToggler) {
 		const bsCollapse = new bootstrap.Collapse(navbarCollapse, { toggle: false });
-
 		document.addEventListener('keydown', function (e) {
 			if (e.key === 'Escape' && navbarCollapse.classList.contains('show')) {
 				bsCollapse.hide();
