@@ -293,13 +293,42 @@ function initAccessibleTabs() {
 function optimizeNavBar() {
 	const navbarCollapse = document.getElementById('navbarNav');
 	const navbarToggler = document.querySelector('.navbar-toggler');
+
 	if (navbarCollapse && navbarToggler) {
 		const bsCollapse = new bootstrap.Collapse(navbarCollapse, { toggle: false });
+
+		// 1. ESC 鍵關閉選單 (原有的功能保持)
 		document.addEventListener('keydown', function (e) {
 			if (e.key === 'Escape' && navbarCollapse.classList.contains('show')) {
 				bsCollapse.hide();
 				navbarToggler.focus();
 			}
+		});
+
+		// 2. 點擊選單外部自動收合 (Click Outside)
+		document.addEventListener('click', function (e) {
+			// 如果選單是開啟狀態
+			if (navbarCollapse.classList.contains('show')) {
+				// 且點擊目標不在選單內，也不在切換按鈕上
+				if (!navbarCollapse.contains(e.target) && !navbarToggler.contains(e.target)) {
+					bsCollapse.hide();
+				}
+			}
+		});
+
+		// 3. 焦點移出選單自動收合 (Focus Out)
+		// 監聽選單內的 focusout 事件
+		navbarCollapse.addEventListener('focusout', function (e) {
+			// 稍微延遲以獲取新的 activeElement
+			setTimeout(() => {
+				// 如果選單是開啟狀態
+				if (navbarCollapse.classList.contains('show')) {
+					// 且新的焦點不在選單內，也不在切換按鈕上
+					if (!navbarCollapse.contains(document.activeElement) && !navbarToggler.contains(document.activeElement)) {
+						bsCollapse.hide();
+					}
+				}
+			}, 10); // 短暫延遲確保 focus 轉移完成
 		});
 	}
 }
