@@ -50,19 +50,29 @@ async function fetchAndInitCarousel() {
 	}
 }
 
+/* 輪播控制邏輯修正 */
 function startCarouselLogic() {
 	const carouselElement = document.querySelector('#main-carousel');
 	const pauseBtn = document.querySelector('#carouselPauseBtn');
 	if (!carouselElement || !pauseBtn) return;
 
+	// 移除預設 data-bs-* 屬性以避免衝突，改由 JS 完全接管
+	// 但保留基本的 class 以供樣式使用
+
+	// 初始化 Bootstrap Carousel 實例
+	// 設置 pause: false (禁用預設的 hover 暫停，改由我們手動控制以避免衝突)
 	let carousel = new bootstrap.Carousel(carouselElement, {
 		interval: 5000,
-		pause: 'hover',
+		pause: false,
 		keyboard: true
 	});
 
-	let isPaused = false;
+	// 狀態變數：是否由使用者手動暫停
+	let isUserPaused = false;
+	// 狀態變數：是否因焦點而暫停
+	let isFocusPaused = false;
 
+	// 建立或獲取狀態回饋元素 (Live Region)
 	let statusFeedback = document.getElementById('carousel-status-feedback');
 	if (!statusFeedback) {
 		statusFeedback = document.createElement('div');
@@ -72,65 +82,92 @@ function startCarouselLogic() {
 		carouselElement.appendChild(statusFeedback);
 	}
 
-	const updateUI = (paused) => {
-		if (paused) {
+	// 統一更新 UI 與 Carousel 狀態
+	const updateCarouselState = () => {
+		// 只要「使用者手動暫停」或「焦點暫停」其中之一成立，就應該暫停
+		const shouldPause = isUserPaused || isFocusPaused;
+
+		if (shouldPause) {
+			carousel.pause();
+			// 確保停止循環
+			carouselElement.removeAttribute('data-bs-ride');
+		} else {
+			carousel.cycle();
+			carouselElement.setAttribute('data-bs-ride', 'carousel');
+		}
+
+		// 只有當「使用者手動暫停」狀態改變時，才更新按鈕文字
+		// 這樣當焦點暫停時，按鈕不會變成「開始輪播」(因為使用者沒按暫停)
+		// 但這裡依據 WCAG，若焦點暫停，通常不需改變按鈕狀態，只需停止動畫
+
+		// 更新按鈕文字與 ARIA (僅反映手動狀態)
+		if (isUserPaused) {
 			pauseBtn.innerText = '開始輪播';
-			pauseBtn.setAttribute('aria-label', '開始輪播動畫');
-			statusFeedback.innerText = '輪播已暫停';
-			carouselElement.setAttribute('aria-live', 'polite');
-			carouselElement.setAttribute('data-bs-ride', 'false');
-			carouselElement.setAttribute('data-bs-interval', 'false');
+			pauseBtn.setAttribute('aria-label', '開始輪播');
+
+			// 視覺化回饋：只有手動操作才提示狀態
+			if (document.activeElement === pauseBtn) {
+				statusFeedback.innerText = '輪播已暫停';
+			}
 		} else {
 			pauseBtn.innerText = '暫停輪播';
-			pauseBtn.setAttribute('aria-label', '暫停輪播動畫');
-			statusFeedback.innerText = '輪播已開始播放';
-			carouselElement.setAttribute('aria-live', 'off');
-			carouselElement.setAttribute('data-bs-ride', 'carousel');
-			carouselElement.setAttribute('data-bs-interval', '5000');
+			pauseBtn.setAttribute('aria-label', '暫停輪播');
+
+			if (document.activeElement === pauseBtn) {
+				statusFeedback.innerText = '輪播已開始播放';
+			}
 		}
 	};
 
-	pauseBtn.addEventListener('click', function() {
-		if (!isPaused) {
-			carousel.pause();
-			isPaused = true;
-			carouselElement.addEventListener('mouseleave', forcePauseOnLeave);
-		} else {
-			carousel.cycle();
-			isPaused = false;
-			carouselElement.removeEventListener('mouseleave', forcePauseOnLeave);
-		}
-		updateUI(isPaused);
+	// 1. 按鈕點擊事件
+	pauseBtn.addEventListener('click', function () {
+		isUserPaused = !isUserPaused; // 切換手動暫停狀態
+		updateCarouselState();
 	});
 
-	carouselElement.addEventListener('focusin', function() {
+	// 2. 焦點事件 (整個輪播區域)
+	// 當焦點進入輪播區 (包含按鈕、內容連結)，暫停播放
+	carouselElement.addEventListener('focusin', function () {
+		isFocusPaused = true;
+		// 焦點進入時，暫時停止輪播，但不改變「手動暫停按鈕」的狀態
+		// 這是為了避免使用者疑惑為何按鈕自己變了
+		// 且符合「使用者若移開焦點，輪播應恢復(若原本是播放中)」
 		carousel.pause();
-		carouselElement.setAttribute('aria-live', 'polite');
 	});
 
-	carouselElement.addEventListener('focusout', function() {
-		if (!isPaused) {
-			carousel.cycle();
-			carouselElement.setAttribute('aria-live', 'off');
+	// 當焦點離開輪播區
+	carouselElement.addEventListener('focusout', function (e) {
+		// 確保新的焦點不在輪播區內
+		if (!carouselElement.contains(e.relatedTarget)) {
+			isFocusPaused = false;
+			updateCarouselState(); // 依據 isUserPaused 決定是否恢復播放
 		}
 	});
 
-	function forcePauseOnLeave() {
-		if (isPaused) {
-			carousel.pause();
-		}
-	}
-
-	carouselElement.addEventListener('keydown', function(e) {
-		if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-			carouselElement.setAttribute('aria-live', 'polite');
-		}
+	// 3. 滑鼠懸停 (Hover) 事件
+	// 雖然無障礙規範主要針對鍵盤，但滑鼠懸停暫停也是常見輔助
+	carouselElement.addEventListener('mouseenter', function () {
+		isFocusPaused = true; // 視同焦點進入，暫停
+		carousel.pause();
 	});
+
+	carouselElement.addEventListener('mouseleave', function () {
+		isFocusPaused = false;
+		updateCarouselState();
+	});
+
+	// 初始啟動
+	carousel.cycle();
 }
 
 /**
  * 初始化宣導頁籤組件
  * 修正焦點順序：由「方向鍵切換」改為符合檢測要求的「線性 Tab 鍵導覽」
+ */
+/**
+ * 初始化宣導頁籤組件
+ * 修正焦點順序：由「方向鍵切換」改為符合檢測要求的「線性 Tab 鍵導覽」
+ * 流程：Tab1 -> Panel1 -> Tab2 -> Panel2 ...
  */
 function initAccessibleTabs() {
 	const tabList = document.querySelector('#promoTab');
@@ -138,68 +175,116 @@ function initAccessibleTabs() {
 
 	const tabs = Array.from(tabList.querySelectorAll('[role="tab"]'));
 
-	// 1. 確保所有頁籤標題皆可被 Tab 鍵遊走 (tabindex="0")
+	function getFocusableInPanel(panel) {
+		// 簡單過濾可視與可聚焦元素
+		return Array.from(panel.querySelectorAll('a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"])'))
+			.filter(el => !el.hasAttribute('disabled') && el.offsetParent !== null);
+	}
+
 	tabs.forEach((tab, index) => {
+		// 1. 確保所有頁籤標題皆可被 Tab 鍵遊走 (tabindex="0")
 		tab.setAttribute('tabindex', '0');
 
 		// 當標題獲得焦點時，自動顯示對應內容 (Follow Focus)
-		// 這能確保使用者 Tab 到標題時，下方的面板內容已更新為正確資訊
 		tab.addEventListener('focus', () => {
 			const bsTab = bootstrap.Tab.getOrCreateInstance(tab);
 			bsTab.show();
 		});
 
-		// 2. 管理 Tab 鍵流向：當在面板最後一個元素按下 Tab，導向「下一個頁籤標題」
-		const panelId = tab.getAttribute('aria-controls');
-		const panel = document.getElementById(panelId);
-		if (panel) {
-			// 設定面板為可接受焦點，方便螢幕閱讀器讀取
-			panel.setAttribute('tabindex', '0');
+		// 綁定頁籤本身的鍵盤事件
+		tab.addEventListener('keydown', (e) => {
+			const panelId = tab.getAttribute('aria-controls');
+			const panel = document.getElementById(panelId);
 
-			// 監聽面板內的最後一個焦點元素
-			panel.addEventListener('keydown', (e) => {
-				if (e.key === 'Tab' && !e.shiftKey) {
-					const focusableElements = panel.querySelectorAll('a, button, input, textarea, [tabindex="0"]');
-					const lastElement = focusableElements[focusableElements.length - 1] || panel;
-
-					// 如果當前焦點在最後一個元素（或面板本身），則強制導向下一頁籤標題
-					if (document.activeElement === lastElement) {
-						const nextTab = tabs[index + 1];
-						if (nextTab) {
-							e.preventDefault();
-							nextTab.focus();
-						}
+			// 情境 A: 在 Tab 上按 Tab 鍵 (往下) -> 應進入該 Tab 的 Panel
+			if (e.key === 'Tab' && !e.shiftKey) {
+				if (panel) {
+					e.preventDefault();
+					const focusables = getFocusableInPanel(panel);
+					if (focusables.length > 0) {
+						focusables[0].focus();
+					} else {
+						// 若 Panel 內無可聚焦元素，聚焦 Panel 本身
+						panel.setAttribute('tabindex', '0');
+						panel.focus();
 					}
 				}
-			});
-		}
+			}
 
-		// 3. 處理 Shift + Tab：從標題往回走應回到前一個面板的末尾
-		tab.addEventListener('keydown', (e) => {
+			// 情境 B: 在 Tab 上按 Shift + Tab (往上) -> 應回到「前一個 Tab 的 Panel」的最後一個元素
+			// 若是第一個 Tab，則依其自然順序回到 TabList 之前的元素 (不需處理)
 			if (e.key === 'Tab' && e.shiftKey) {
 				const prevTab = tabs[index - 1];
 				if (prevTab) {
 					const prevPanelId = prevTab.getAttribute('aria-controls');
 					const prevPanel = document.getElementById(prevPanelId);
-					const prevFocusable = prevPanel.querySelectorAll('a, button, input, [tabindex="0"]');
-					const lastElOfPrev = prevFocusable[prevFocusable.length - 1] || prevPanel;
-
-					e.preventDefault();
-					lastElOfPrev.focus();
+					if (prevPanel) {
+						e.preventDefault();
+						const prevFocusables = getFocusableInPanel(prevPanel);
+						if (prevFocusables.length > 0) {
+							prevFocusables[prevFocusables.length - 1].focus();
+						} else {
+							// 若前一個 Panel 無內容，則聚焦前一個 Tab 標題
+							prevTab.focus();
+						}
+					}
 				}
 			}
 		});
+
+		// 處理 Panel 內的導覽
+		const panelId = tab.getAttribute('aria-controls');
+		const panel = document.getElementById(panelId);
+		if (panel) {
+			// 確保 panel 可程式聚焦 (方便在空內容時作為落點)
+			panel.setAttribute('tabindex', '-1');
+
+			panel.addEventListener('keydown', (e) => {
+				// 情境 C: 在 Panel 內按 Shift + Tab (往上)
+				// 若目前焦點是 Panel 內的第一個元素 (或是 Panel 本身)，則回到對應的 Tab 標題
+				if (e.key === 'Tab' && e.shiftKey) {
+					const focusables = getFocusableInPanel(panel);
+					const firstEl = focusables[0] || panel;
+
+					if (document.activeElement === firstEl || document.activeElement === panel) {
+						e.preventDefault();
+						tab.focus();
+					}
+				}
+
+				// 情境 D: 在 Panel 內按 Tab (往下)
+				// 若目前焦點是 Panel 內的最後一個元素 (或是 Panel 本身)，則跳到「下一個 Tab 標題」
+				if (e.key === 'Tab' && !e.shiftKey) {
+					const focusables = getFocusableInPanel(panel);
+					const lastEl = focusables[focusables.length - 1] || panel;
+
+					if (document.activeElement === lastEl) {
+						const nextTab = tabs[index + 1];
+						if (nextTab) {
+							e.preventDefault();
+							nextTab.focus();
+						}
+						// 若沒有下一個 Tab，則讓瀏覽器執行預設行為 (離開 Tab 組件)
+					}
+				}
+			});
+		}
 	});
 
 	// Hash 偵測維持
 	const handleHash = () => {
 		const hash = window.location.hash;
 		if (!hash) return;
-		let targetTab = document.querySelector(`button${hash}[role="tab"]`);
-		if (targetTab) {
-			const bsTab = bootstrap.Tab.getOrCreateInstance(targetTab);
-			bsTab.show();
-			setTimeout(() => targetTab.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+		// 修正選取器邏輯，避免無效選取
+		try {
+			let targetTab = document.querySelector(`button${hash}[role="tab"]`);
+			if (targetTab) {
+				const bsTab = bootstrap.Tab.getOrCreateInstance(targetTab);
+				bsTab.show();
+				setTimeout(() => targetTab.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+			}
+		} catch (err) {
+			// 忽略無效 hash
 		}
 	};
 	handleHash();
