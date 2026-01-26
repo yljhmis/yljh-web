@@ -12,20 +12,19 @@ async function fetchAndInitCarousel() {
 		if (!response.ok) throw new Error('無法讀取 JSON 檔案');
 
 		const carouselData = await response.json();
-		const indicatorsContainer = document.getElementById('carousel-indicators-container');
+
+
 		const innerContainer = document.getElementById('carousel-inner-container');
 
-		let indicatorsHtml = '';
+
 		let innerHtml = '';
 
 		carouselData.forEach((item, index) => {
 			const activeClass = index === 0 ? 'active' : '';
-			const ariaCurrent = index === 0 ? 'aria-current="true"' : '';
 
-			indicatorsHtml += `
-                <button type="button" data-bs-target="#main-carousel" 
-                    data-bs-slide-to="${index}" class="${activeClass}" 
-                    ${ariaCurrent} aria-label="第 ${index + 1} 張投影片：${item.alt}"></button>`;
+
+			// 指示器按鈕：增加 data-alt 屬性以便 JS 抓取報讀內容
+
 
 			innerHtml += `
                 <div class="carousel-item ${activeClass}" 
@@ -36,43 +35,31 @@ async function fetchAndInitCarousel() {
                 </div>`;
 		});
 
-		indicatorsContainer.innerHTML = indicatorsHtml;
+
 		innerContainer.innerHTML = innerHtml;
 
-		startCarouselLogic();
+		startCarouselLogic(carouselData);
 
 	} catch (error) {
 		console.error('載入失敗:', error);
-		const container = document.getElementById('carousel-inner-container');
-		if (container) {
-			container.innerHTML = '<p class="p-4 text-danger" role="alert">無法載入輪播內容，請檢查網路連線。</p>';
-		}
 	}
 }
 
-/* 輪播控制邏輯修正 */
-function startCarouselLogic() {
+function startCarouselLogic(carouselData) {
 	const carouselElement = document.querySelector('#main-carousel');
 	const pauseBtn = document.querySelector('#carouselPauseBtn');
 	if (!carouselElement || !pauseBtn) return;
 
-	// 移除預設 data-bs-* 屬性以避免衝突，改由 JS 完全接管
-	// 但保留基本的 class 以供樣式使用
-
-	// 初始化 Bootstrap Carousel 實例
-	// 設置 pause: false (禁用預設的 hover 暫停，改由我們手動控制以避免衝突)
 	let carousel = new bootstrap.Carousel(carouselElement, {
 		interval: 5000,
 		pause: false,
 		keyboard: true
 	});
 
-	// 狀態變數：是否由使用者手動暫停
 	let isUserPaused = false;
-	// 狀態變數：是否因焦點而暫停
 	let isFocusPaused = false;
 
-	// 建立或獲取狀態回饋元素 (Live Region)
+	// 取得或建立 Live Region
 	let statusFeedback = document.getElementById('carousel-status-feedback');
 	if (!statusFeedback) {
 		statusFeedback = document.createElement('div');
@@ -82,82 +69,59 @@ function startCarouselLogic() {
 		carouselElement.appendChild(statusFeedback);
 	}
 
-	// 統一更新 UI 與 Carousel 狀態
-	const updateCarouselState = () => {
-		// 只要「使用者手動暫停」或「焦點暫停」其中之一成立，就應該暫停
+	const updateCarouselState = (manualAlt = null) => {
 		const shouldPause = isUserPaused || isFocusPaused;
 
 		if (shouldPause) {
 			carousel.pause();
-			// 確保停止循環
-			carouselElement.removeAttribute('data-bs-ride');
+			// 當暫停時，將 aria-live 設為 polite 以便報讀手動切換的內容
+			carouselElement.setAttribute('aria-live', 'polite');
 		} else {
 			carousel.cycle();
-			carouselElement.setAttribute('data-bs-ride', 'carousel');
+			// 自動播放時設為 off 避免過度干擾
+			carouselElement.setAttribute('aria-live', 'off');
 		}
 
-		// 只有當「使用者手動暫停」狀態改變時，才更新按鈕文字
-		// 這樣當焦點暫停時，按鈕不會變成「開始輪播」(因為使用者沒按暫停)
-		// 但這裡依據 WCAG，若焦點暫停，通常不需改變按鈕狀態，只需停止動畫
+		// 更新按鈕視覺狀態
+		pauseBtn.innerText = isUserPaused ? '開始輪播' : '暫停輪播';
+		pauseBtn.setAttribute('aria-label', isUserPaused ? '開始輪播' : '暫停輪播');
 
-		// 更新按鈕文字與 ARIA (僅反映手動狀態)
-		if (isUserPaused) {
-			pauseBtn.innerText = '開始輪播';
-			pauseBtn.setAttribute('aria-label', '開始輪播');
-
-			// 視覺化回饋：只有手動操作才提示狀態
-			if (document.activeElement === pauseBtn) {
-				statusFeedback.innerText = '輪播已暫停';
-			}
-		} else {
-			pauseBtn.innerText = '暫停輪播';
-			pauseBtn.setAttribute('aria-label', '暫停輪播');
-
-			if (document.activeElement === pauseBtn) {
-				statusFeedback.innerText = '輪播已開始播放';
-			}
+		// 如果有傳入特定說明 (例如焦點在指示器上)，則立即報讀
+		if (manualAlt) {
+			statusFeedback.innerText = manualAlt;
 		}
 	};
 
-	// 1. 按鈕點擊事件
-	pauseBtn.addEventListener('click', function () {
-		isUserPaused = !isUserPaused; // 切換手動暫停狀態
-		updateCarouselState();
+
+
+	pauseBtn.addEventListener('click', () => {
+		isUserPaused = !isUserPaused;
+		updateCarouselState(isUserPaused ? '輪播已暫停' : '輪播已開始播放');
 	});
 
-	// 2. 焦點事件 (整個輪播區域)
-	// 當焦點進入輪播區 (包含按鈕、內容連結)，暫停播放
-	carouselElement.addEventListener('focusin', function () {
+	// 整個區域的焦點移入/移出
+	carouselElement.addEventListener('focusin', () => {
 		isFocusPaused = true;
-		// 焦點進入時，暫時停止輪播，但不改變「手動暫停按鈕」的狀態
-		// 這是為了避免使用者疑惑為何按鈕自己變了
-		// 且符合「使用者若移開焦點，輪播應恢復(若原本是播放中)」
 		carousel.pause();
 	});
 
-	// 當焦點離開輪播區
-	carouselElement.addEventListener('focusout', function (e) {
-		// 確保新的焦點不在輪播區內
+	carouselElement.addEventListener('focusout', (e) => {
 		if (!carouselElement.contains(e.relatedTarget)) {
 			isFocusPaused = false;
-			updateCarouselState(); // 依據 isUserPaused 決定是否恢復播放
+			updateCarouselState();
 		}
 	});
 
-	// 3. 滑鼠懸停 (Hover) 事件
-	// 雖然無障礙規範主要針對鍵盤，但滑鼠懸停暫停也是常見輔助
-	carouselElement.addEventListener('mouseenter', function () {
-		isFocusPaused = true; // 視同焦點進入，暫停
+	// 滑鼠移入暫停
+	carouselElement.addEventListener('mouseenter', () => {
+		isFocusPaused = true;
 		carousel.pause();
 	});
 
-	carouselElement.addEventListener('mouseleave', function () {
+	carouselElement.addEventListener('mouseleave', () => {
 		isFocusPaused = false;
 		updateCarouselState();
 	});
-
-	// 初始啟動
-	carousel.cycle();
 }
 
 /**
