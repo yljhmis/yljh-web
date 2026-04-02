@@ -11,7 +11,7 @@ async function fetchAndInitCarousel() {
 		const response = await fetch('carouselData.json');
 		if (!response.ok) throw new Error('無法讀取 JSON 檔案');
 
-		const carouselData = await response.json();
+		const carouselData = (await response.json()).filter(item => item.enable === true);
 
 
 		const innerContainer = document.getElementById('carousel-inner-container');
